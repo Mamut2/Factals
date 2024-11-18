@@ -1,19 +1,19 @@
-#version 150
+#version 400
 
-uniform float iTime;
+uniform float zoom;
 uniform float posX;
 uniform float posY;
+uniform vec2 aspectRatio;
 
-float mandelbrot(vec2 uv)
+double mandelbrot(vec2 uv)
 {
-	vec2 c = 10 * (uv - vec2(posX, posY) * 1080 / 1920);
-	c = c / pow(iTime, 4.0) - vec2(posX, posY) * 1080 / 1920;
-	vec2 z = vec2(0.0);
-	float iter = 0.0;
-	for(float i; i < 3000.0; i++)
+	dvec2 c = dvec2(dvec2(aspectRatio * (dvec2(uv) - dvec2(0.5, 0.5)) / double(pow(4, zoom)) - dvec2(posX, posY)));
+	dvec2 z = dvec2(0.0);
+	double iter = 0.0;
+	for(float i; i < 1000; i++)
 	{
-		z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
-		if(dot(z, z) > 4.0) return iter / 3000.0;
+		z = dvec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
+		if(dot(z, z) > 4.0) return iter / 20;
 		iter++;
 	}
 	return 0.0;
@@ -21,13 +21,11 @@ float mandelbrot(vec2 uv)
 
 void main()
 {	
-	vec2 uv = gl_FragCoord.xy / 1920.0;
+	vec2 uv = vec2(gl_FragCoord.x / 1920, gl_FragCoord.y / 1080);
 	vec3 col = vec3(0.0);
 
-	float m = mandelbrot(uv);
-	if(m > 0.9) col.x += m;
-	else if(m > 0.1) col.y += m;
-	col.z += m;
+	float m = float(mandelbrot(uv));
+	col = vec3(sin(m), tan(m), tan(m));
 	col = pow(col, vec3(0.45));
 
 	gl_FragColor = vec4(col, 1.0);

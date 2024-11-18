@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 
 int main()
 {
@@ -8,7 +9,7 @@ int main()
     if(!shader.loadFromFile("fractal.frag", sf::Shader::Fragment))
         std::cout << "Failed to load shader\n";
 
-    float posX = 1, posY = 0.8525;
+    float posX = 0, posY = 0, zoom = 1;
 
     sf::Clock clock;
     while (window.isOpen())
@@ -30,12 +31,18 @@ int main()
                     if(!shader.loadFromFile("fractal.frag", sf::Shader::Fragment))
                         std::cout << "Failed to load shader\n";
                     else
+                    {
                         clock.restart();
+                        zoom = 1;
+                        posX = posY = 0;
+                    }
                 }
-                if(event.key.code == sf::Keyboard::Left) posX += 0.1;
-                if(event.key.code == sf::Keyboard::Right) posX -= 0.1;
-                if(event.key.code == sf::Keyboard::Down) posY += 0.1;
-                if(event.key.code == sf::Keyboard::Up) posY -= 0.1;
+                if(event.key.code == sf::Keyboard::Left) posX += 1 / pow(4, zoom);
+                if(event.key.code == sf::Keyboard::Right) posX -= 1 / pow(4, zoom);
+                if(event.key.code == sf::Keyboard::Down) posY += 1 / pow(4, zoom);
+                if(event.key.code == sf::Keyboard::Up) posY -= 1 / pow(4, zoom);
+                if(event.key.code == sf::Keyboard::Z) zoom += 0.5;
+                if(event.key.code == sf::Keyboard::X) zoom -= 0.5;
             default:
                 break;
             }
@@ -49,9 +56,10 @@ int main()
         texture.create(window.getSize().x, window.getSize().y);
         sprite.setTexture(texture);
 
-        shader.setUniform("iTime", clock.getElapsedTime().asSeconds());
+        shader.setUniform("zoom", zoom);
         shader.setUniform("posX", posX);
         shader.setUniform("posY", posY);
+        shader.setUniform("aspectRatio", sf::Vector2f(16, 9));
 
         window.draw(sprite, &shader);
 
