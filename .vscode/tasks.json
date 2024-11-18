@@ -8,7 +8,6 @@
                 "main.o",
                 "-o",
                 "main",
-                "-static-libgcc",
                 "-L",
                 "${workspaceFolder}\\SFML-2.6.1\\lib",
                 "-lsfml-graphics",
