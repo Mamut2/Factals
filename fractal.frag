@@ -10,7 +10,7 @@ double mandelbrot(vec2 uv)
 	dvec2 c = dvec2(dvec2(aspectRatio * (dvec2(uv) - dvec2(0.5, 0.5)) / double(pow(4, zoom)) - dvec2(posX, posY)));
 	dvec2 z = dvec2(0.0);
 	double iter = 0.0;
-	for(float i; i < 1000; i++)
+	for(float i; i < 256; i++)
 	{
 		z = dvec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
 		if(dot(z, z) > 4.0) return iter / 20;
